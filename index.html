@@ -39,6 +39,12 @@
   #knapper .brud { flex-basis: 100%; height: 0; }
   .hjoerne { position: absolute; top: calc(var(--u) * 2.5); right: calc(var(--u) * 2.5); width: auto; min-height: 0; padding: calc(var(--u) * .7) calc(var(--u) * 1.5);
     font-size: calc(var(--u) * 1.25); border-radius: 999px; background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); z-index: 5; }
+  #pause { right: auto; left: calc(var(--u) * 2.5); display: none; transition: opacity .3s; }
+  #pause.vis { display: block; }
+  .skjul-mus #pause:not(.sat) { opacity: 0; }
+  #pause.sat { background: rgba(255,255,255,.95); color: var(--brun); border-color: #fff; }
+  #moerk { position: absolute; inset: 0; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  #moerk.vis { opacity: 1; }
   #spring, #tryk { display: none; }
   #spring.vis, #tryk.vis { display: block; }
   #tryk { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 6; }
@@ -64,13 +70,15 @@
   <div class="lag" id="slut"><h1>Dommen er jeres</h1><button id="igen">Se filmen igen</button></div>
 
   <button class="hjoerne" id="fuld" title="Fuld skærm (F)">Fuld skærm</button>
+  <div id="moerk"></div>
+  <button class="hjoerne" id="pause" title="Pause (mellemrum)">❚❚ Pause</button>
   <button class="hjoerne" id="spring">Spring til valget ›</button>
   <button id="tryk">Tryk for at fortsætte</button>
 </div></div>
 
 <script>
 const DATA = {"start":"SEG_00_start","segments":{"SEG_00_start":{"file":"segments/SEG_00_start.mp4","duration":126.33,"choice":"V1","next":null},"SEG_V2_JOHAN":{"file":"segments/SEG_V2_JOHAN.mp4","duration":22.43,"choice":null,"next":"SEG_01_JANNI"},"SEG_01_JANNI":{"file":"segments/SEG_01_JANNI.mp4","duration":85,"choice":"V2","next":null},"SEG_V2_JANNI":{"file":"segments/SEG_V2_JANNI.mp4","duration":22.37,"choice":"V3","next":null},"SEG_V1_KASPER":{"file":"segments/SEG_V1_KASPER.mp4","duration":37.73,"choice":"V3","next":null},"SEG_V1_LENE":{"file":"segments/SEG_V1_LENE.mp4","duration":40.67,"choice":"V3","next":null},"SEG_V1_THOMAS":{"file":"segments/SEG_V1_THOMAS.mp4","duration":50.53,"choice":"V3","next":null},"SEG_V1_METTE":{"file":"segments/SEG_V1_METTE.mp4","duration":62.73,"choice":"V3","next":null},"SEG_V1_LAEGE":{"file":"segments/SEG_V1_LAEGE.mp4","duration":39.07,"choice":"V3","next":null},"SEG_V1_POLITI":{"file":"segments/SEG_V1_POLITI.mp4","duration":41.3,"choice":"V3","next":null},"SEG_V2_PROCEDURE":{"file":"segments/SEG_V2_PROCEDURE.mp4","duration":58,"choice":"V4","next":null},"SEG_V3A":{"file":"segments/SEG_V3A.mp4","duration":67.47,"choice":null,"next":null},"SEG_V3B":{"file":"segments/SEG_V3B.mp4","duration":80.53,"choice":null,"next":null}},"choices":{"V4":{"question":"Hvad er jeres dom?","A":{"label":"Skyldig","next":"SEG_V3A"},"B":{"label":"Ikke skyldig","next":"SEG_V3B"}},"V1":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Johan?","type":"pick-one","options":[{"label":"Spørg Johan","next":"SEG_V2_JOHAN"},{"label":"Gå videre","next":"SEG_01_JANNI"}]},"V2":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Janni?","type":"pick-one","options":[{"label":"Spørg Janni","next":"SEG_V2_JANNI"},{"label":"Gå videre","next":"V3"}]},"V3":{"question":"Hvilket vidne vil I høre?","type":"pick-until-done","options":[{"label":"Bartenderen Kasper","next":"SEG_V1_KASPER"},{"label":"Kollegaen Lene","next":"SEG_V1_LENE"},{"label":"Johans ven Thomas","next":"SEG_V1_THOMAS"},{"label":"Søsteren Mette","next":"SEG_V1_METTE"},{"label":"Lægen Susanne Holm","next":"SEG_V1_LAEGE"},{"label":"Politiassistent Mikkel Lund","next":"SEG_V1_POLITI"}],"done":{"label":"Vi har hørt nok","next":"SEG_V2_PROCEDURE"}}}};
-const VALG_PAUSE = 120000, SLUT_PAUSE = 60000; // tilbage til start, når ingen trykker
+const VALG_PAUSE = 120000, SLUT_PAUSE = 60000, PAUSE_MAX = 300000; // tilbage til start, når ingen trykker
 const DEMO = new URLSearchParams(location.search).has("demo"); // ?demo viser knappen "Spring til valget"
 
 const $ = (id) => document.getElementById(id);
@@ -114,6 +122,18 @@ function varm(id) {
   for (const n of naeste) if (DATA.segments[n]) fetch(DATA.segments[n].file).then((r) => r.blob()).catch(() => {});
 }
 
+// Pauseknappen vises kun, mens et klip spiller. Står filmen på pause i fem minutter, går den tilbage til start.
+function pauseKnap() {
+  const iFilm = !!nu && !Object.values(lag).some((el) => el.classList.contains("vis"));
+  const sat = iFilm && film.paused && !film.ended && film.classList.contains("klar") && !$("tryk").classList.contains("vis");
+  $("pause").classList.toggle("vis", iFilm && !$("tryk").classList.contains("vis"));
+  $("pause").classList.toggle("sat", sat);
+  $("pause").textContent = sat ? "▶ Fortsæt" : "❚❚ Pause";
+  $("moerk").classList.toggle("vis", sat);
+  if (iFilm) ventPaaTryk(sat ? PAUSE_MAX : 0);
+}
+function pause() { if (!nu) return; film.paused ? spil() : film.pause(); }
+
 function videre(maal) { DATA.choices[maal] ? visValg(maal) : afspil(maal); }
 
 function visValg(id) {
@@ -143,6 +163,8 @@ function visValg(id) {
 }
 
 film.addEventListener("playing", () => film.classList.add("klar"));
+for (const ev of ["playing", "pause", "ended", "emptied"]) film.addEventListener(ev, pauseKnap);
+new MutationObserver(pauseKnap).observe($("ramme"), { attributes: true, subtree: true, attributeFilter: ["class"] });
 film.addEventListener("ended", () => {
   const s = DATA.segments[nu];
   if (!s) return;
@@ -173,10 +195,11 @@ $("fuld").onclick = () => fuld(true);
 $("startknap").onclick = () => { if (kanFuld) fuld(true); afspil(DATA.start); };
 $("igen").onclick = nulstil;
 $("tryk").onclick = spil;
+$("pause").onclick = pause;
 $("spring").onclick = () => { if (film.duration) film.currentTime = Math.max(0, film.duration - 0.4); };
 document.addEventListener("keydown", (e) => {
   if (e.key === "f" || e.key === "F") fuld(!erFuld());
-  if (e.key === " " && nu && !lag.valg.classList.contains("vis")) { e.preventDefault(); film.paused ? spil() : film.pause(); }
+  if (e.key === " " && $("pause").classList.contains("vis")) { e.preventDefault(); pause(); }
 });
 // Et tryk eller en bevægelse udskyder returen til start, og musen skjules under filmen.
 let musT;
