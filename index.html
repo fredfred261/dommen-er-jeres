@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>Dommen er jeres</title>
+<style>
+  :root { --u: min(1vw, 1.7778vh); --u: min(1vw, 1.7778dvh); --brun: #2B1E16; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: #000; color: #fff; overflow: hidden; overscroll-behavior: none;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+  .scene { position: fixed; inset: 0; display: grid; place-items: center; background: #000; }
+  /* Rammen har altid filmens format, så knapperne ligger samme sted på alle skærme. */
+  .ramme { position: relative; width: calc(var(--u) * 100); height: calc(var(--u) * 56.25); overflow: hidden; background: #000; }
+  video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .25s; background: transparent; }
+  video.klar { opacity: 1; }
+  .lag { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; opacity: 0; visibility: hidden; transition: opacity .4s, visibility .4s; }
+  .lag.vis { opacity: 1; visibility: visible; }
+  #start { justify-content: center; gap: calc(var(--u) * 1.9); background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.8)), url(start.jpg) center / cover; text-align: center; padding: 0 calc(var(--u) * 4); }
+  #slut { justify-content: center; gap: calc(var(--u) * 2.9); background: #000; }
+  #valg { justify-content: flex-end; gap: calc(var(--u) * 2.2); padding: 0 calc(var(--u) * 3.3) calc(var(--u) * 4.4); background: linear-gradient(rgba(0,0,0,0) 25%, rgba(0,0,0,.8) 68%, rgba(0,0,0,.92)); }
+  h1 { font-size: calc(var(--u) * 6.25); font-weight: 700; line-height: 1.1; }
+  #slut h1 { font-size: calc(var(--u) * 4.6); }
+  .under { font-size: calc(var(--u) * 1.9); opacity: .9; }
+  .advarsel { font-size: calc(var(--u) * 1.25); opacity: .75; max-width: calc(var(--u) * 80); }
+  #spm { font-size: calc(var(--u) * 2.7); font-weight: 600; text-align: center; line-height: 1.25; }
+  #knapper { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 1.25) calc(var(--u) * 1.7); width: 100%; }
+  button { font: inherit; color: #fff; cursor: pointer; border: calc(var(--u) * .1) solid rgba(255,255,255,.7); border-radius: calc(var(--u) * .75);
+    background: rgba(43,30,22,.94); font-weight: 600; font-size: calc(var(--u) * 2); width: calc(var(--u) * 33.3); min-height: calc(var(--u) * 6.7); padding: 0 calc(var(--u) * 1.6);
+    transition: transform .12s, background .12s; touch-action: manipulation; }
+  button:hover, button:focus-visible { background: rgba(70,50,38,.97); outline: none; transform: scale(1.02); }
+  button:active { transform: scale(.98); }
+  #knapper.mange button { width: calc(var(--u) * 28.1); min-height: calc(var(--u) * 5.4); font-size: calc(var(--u) * 1.56); }
+  #knapper .stop { background: rgba(255,255,255,.95); color: var(--brun); flex-basis: auto; }
+  #knapper .stop:hover, #knapper .stop:focus-visible { background: #fff; }
+  #knapper .brud { flex-basis: 100%; height: 0; }
+  .hjoerne { position: absolute; top: calc(var(--u) * 2.5); right: calc(var(--u) * 2.5); width: auto; min-height: 0; padding: calc(var(--u) * .7) calc(var(--u) * 1.5);
+    font-size: calc(var(--u) * 1.25); border-radius: 999px; background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); z-index: 5; }
+  #spring, #tryk { display: none; }
+  #spring.vis, #tryk.vis { display: block; }
+  #tryk { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 6; }
+  #vend { display: none; font-size: calc(var(--u) * 1.6); opacity: .85; }
+  @media (orientation: portrait) and (max-width: 700px) { #vend { display: block; } }
+  .skjul-mus, .skjul-mus * { cursor: none !important; }
+</style>
+</head>
+<body>
+<div class="scene"><div class="ramme" id="ramme">
+  <video id="film" playsinline webkit-playsinline preload="auto"></video>
+
+  <div class="lag vis" id="start">
+    <h1>Dommen er jeres</h1>
+    <p class="under">I er domsmænd. Til sidst skal I afgøre, om den tiltalte er skyldig.</p>
+    <button id="startknap">Start filmen</button>
+    <p class="advarsel">Filmen handler om en voldtægtssag. Overgrebet bliver ikke vist, men sagen kan være svær at se. Anbefalet fra 15 år.</p>
+    <p id="vend">Vend telefonen på langs for at se filmen i fuld størrelse.</p>
+  </div>
+
+  <div class="lag" id="valg"><p id="spm"></p><div id="knapper"></div></div>
+
+  <div class="lag" id="slut"><h1>Dommen er jeres</h1><button id="igen">Se filmen igen</button></div>
+
+  <button class="hjoerne" id="fuld" title="Fuld skærm (F)">Fuld skærm</button>
+  <button class="hjoerne" id="spring">Spring til valget ›</button>
+  <button id="tryk">Tryk for at fortsætte</button>
+</div></div>
+
+<script>
+const DATA = {"start":"SEG_00_start","segments":{"SEG_00_start":{"file":"segments/SEG_00_start.mp4","duration":126.33,"choice":"V1","next":null},"SEG_V2_JOHAN":{"file":"segments/SEG_V2_JOHAN.mp4","duration":22.43,"choice":null,"next":"SEG_01_JANNI"},"SEG_01_JANNI":{"file":"segments/SEG_01_JANNI.mp4","duration":85,"choice":"V2","next":null},"SEG_V2_JANNI":{"file":"segments/SEG_V2_JANNI.mp4","duration":22.37,"choice":"V3","next":null},"SEG_V1_KASPER":{"file":"segments/SEG_V1_KASPER.mp4","duration":37.73,"choice":"V3","next":null},"SEG_V1_LENE":{"file":"segments/SEG_V1_LENE.mp4","duration":40.67,"choice":"V3","next":null},"SEG_V1_THOMAS":{"file":"segments/SEG_V1_THOMAS.mp4","duration":50.53,"choice":"V3","next":null},"SEG_V1_METTE":{"file":"segments/SEG_V1_METTE.mp4","duration":62.73,"choice":"V3","next":null},"SEG_V1_LAEGE":{"file":"segments/SEG_V1_LAEGE.mp4","duration":39.07,"choice":"V3","next":null},"SEG_V1_POLITI":{"file":"segments/SEG_V1_POLITI.mp4","duration":41.3,"choice":"V3","next":null},"SEG_V2_PROCEDURE":{"file":"segments/SEG_V2_PROCEDURE.mp4","duration":58,"choice":"V4","next":null},"SEG_V3A":{"file":"segments/SEG_V3A.mp4","duration":67.47,"choice":null,"next":null},"SEG_V3B":{"file":"segments/SEG_V3B.mp4","duration":80.53,"choice":null,"next":null}},"choices":{"V4":{"question":"Hvad er jeres dom?","A":{"label":"Skyldig","next":"SEG_V3A"},"B":{"label":"Ikke skyldig","next":"SEG_V3B"}},"V1":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Johan?","type":"pick-one","options":[{"label":"Spørg Johan","next":"SEG_V2_JOHAN"},{"label":"Gå videre","next":"SEG_01_JANNI"}]},"V2":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Janni?","type":"pick-one","options":[{"label":"Spørg Janni","next":"SEG_V2_JANNI"},{"label":"Gå videre","next":"V3"}]},"V3":{"question":"Hvilket vidne vil I høre?","type":"pick-until-done","options":[{"label":"Bartenderen Kasper","next":"SEG_V1_KASPER"},{"label":"Kollegaen Lene","next":"SEG_V1_LENE"},{"label":"Johans ven Thomas","next":"SEG_V1_THOMAS"},{"label":"Søsteren Mette","next":"SEG_V1_METTE"},{"label":"Lægen Susanne Holm","next":"SEG_V1_LAEGE"},{"label":"Politiassistent Mikkel Lund","next":"SEG_V1_POLITI"}],"done":{"label":"Vi har hørt nok","next":"SEG_V2_PROCEDURE"}}}};
+const VALG_PAUSE = 120000, SLUT_PAUSE = 60000; // tilbage til start, når ingen trykker
+const DEMO = new URLSearchParams(location.search).has("demo"); // ?demo viser knappen "Spring til valget"
+
+const $ = (id) => document.getElementById(id);
+const film = $("film"), lag = { start: $("start"), valg: $("valg"), slut: $("slut") };
+let nu = null, hvile = null;
+const hoert = new Set();
+
+// Valg med knap A og B får samme form som de andre.
+for (const c of Object.values(DATA.choices)) if (!c.options) c.options = [c.A, c.B];
+
+function vis(navn) { for (const [k, el] of Object.entries(lag)) el.classList.toggle("vis", k === navn); }
+function ventPaaTryk(ms) { clearTimeout(hvile); hvile = ms ? setTimeout(nulstil, ms) : null; }
+
+function nulstil() {
+  ventPaaTryk(0); hoert.clear(); nu = null;
+  film.pause(); film.classList.remove("klar"); film.removeAttribute("src"); film.load();
+  $("spring").classList.remove("vis"); $("tryk").classList.remove("vis");
+  vis("start");
+}
+
+function afspil(id) {
+  ventPaaTryk(0); nu = id; vis(null);
+  film.classList.remove("klar");
+  film.src = DATA.segments[id].file;
+  film.load();
+  spil();
+  $("spring").classList.toggle("vis", DEMO);
+  varm(id);
+}
+function spil() {
+  $("tryk").classList.remove("vis");
+  const p = film.play();
+  if (p) p.catch(() => { if (nu && film.paused) $("tryk").classList.add("vis"); }); // browseren kræver et tryk for lyd
+}
+
+// Hent det næste klip i forvejen, når der kun er ét eller to mulige. Virker kun på en webserver.
+function varm(id) {
+  if (!location.protocol.startsWith("http")) return;
+  const s = DATA.segments[id], c = s.choice && DATA.choices[s.choice];
+  const naeste = s.next ? [s.next] : c && !c.done ? c.options.map((o) => o.next) : [];
+  for (const n of naeste) if (DATA.segments[n]) fetch(DATA.segments[n].file).then((r) => r.blob()).catch(() => {});
+}
+
+function videre(maal) { DATA.choices[maal] ? visValg(maal) : afspil(maal); }
+
+function visValg(id) {
+  const c = DATA.choices[id];
+  let muligheder = c.options.filter((o) => !(c.done && hoert.has(o.next)));
+  if (c.done && !muligheder.length) return videre(c.done.next); // alle er hørt: gå selv videre
+  const knapper = $("knapper");
+  knapper.textContent = "";
+  knapper.classList.toggle("mange", muligheder.length > 2 || !!c.done);
+  $("spm").textContent = c.question;
+  for (const o of muligheder) {
+    const b = document.createElement("button");
+    b.textContent = o.label;
+    b.onclick = () => { if (c.done) hoert.add(o.next); videre(o.next); };
+    knapper.append(b);
+  }
+  if (c.done && hoert.size) {
+    const brud = document.createElement("span"); brud.className = "brud";
+    const b = document.createElement("button");
+    b.textContent = c.done.label; b.className = "stop";
+    b.onclick = () => videre(c.done.next);
+    knapper.append(brud, b);
+  }
+  $("spring").classList.remove("vis");
+  vis("valg");
+  ventPaaTryk(VALG_PAUSE);
+}
+
+film.addEventListener("playing", () => film.classList.add("klar"));
+film.addEventListener("ended", () => {
+  const s = DATA.segments[nu];
+  if (!s) return;
+  if (s.next) afspil(s.next);
+  else if (s.choice) visValg(s.choice);
+  else { $("spring").classList.remove("vis"); vis("slut"); ventPaaTryk(SLUT_PAUSE); }
+});
+film.addEventListener("error", () => { if (nu) { $("spm").textContent = "Filmen kunne ikke hentes. Tjek forbindelsen, og prøv igen."; $("knapper").textContent = ""; vis("valg"); ventPaaTryk(15000); } });
+
+// Fuld skærm, hvor browseren kan (ikke på iPhone).
+const rod = document.documentElement;
+const kanFuld = !!(rod.requestFullscreen || rod.webkitRequestFullscreen);
+const erFuld = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function fuld(til) {
+  try {
+    const p = til && !erFuld() ? (rod.requestFullscreen || rod.webkitRequestFullscreen).call(rod)
+      : !til && erFuld() ? (document.exitFullscreen || document.webkitExitFullscreen).call(document) : null;
+    if (p && p.catch) p.catch(() => {}); // browseren kan afvise fuld skærm; filmen spiller alligevel
+  } catch (e) {}
+}
+function opdaterFuld() { $("fuld").style.display = kanFuld && !erFuld() && lag.start.classList.contains("vis") ? "" : "none"; }
+document.addEventListener("fullscreenchange", opdaterFuld);
+document.addEventListener("webkitfullscreenchange", opdaterFuld);
+new MutationObserver(opdaterFuld).observe(lag.start, { attributes: true });
+opdaterFuld();
+
+$("fuld").onclick = () => fuld(true);
+$("startknap").onclick = () => { if (kanFuld) fuld(true); afspil(DATA.start); };
+$("igen").onclick = nulstil;
+$("tryk").onclick = spil;
+$("spring").onclick = () => { if (film.duration) film.currentTime = Math.max(0, film.duration - 0.4); };
+document.addEventListener("keydown", (e) => {
+  if (e.key === "f" || e.key === "F") fuld(!erFuld());
+  if (e.key === " " && nu && !lag.valg.classList.contains("vis")) { e.preventDefault(); film.paused ? spil() : film.pause(); }
+});
+// Et tryk eller en bevægelse udskyder returen til start, og musen skjules under filmen.
+let musT;
+for (const ev of ["pointerdown", "pointermove", "keydown"]) document.addEventListener(ev, () => {
+  if (lag.valg.classList.contains("vis")) ventPaaTryk(VALG_PAUSE);
+  document.body.classList.remove("skjul-mus"); clearTimeout(musT);
+  musT = setTimeout(() => { if (nu && !film.paused) document.body.classList.add("skjul-mus"); }, 2500);
+});
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+</script>
+</body>
+</html>
