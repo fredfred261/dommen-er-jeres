@@ -77,12 +77,12 @@
 </div></div>
 
 <script>
-const DATA = {"start":"SEG_00_start","segments":{"SEG_00_start":{"file":"segments/SEG_00_start.mp4","duration":126.33,"choice":"V1","next":null},"SEG_V2_JOHAN":{"file":"segments/SEG_V2_JOHAN.mp4","duration":22.43,"choice":null,"next":"SEG_01_JANNI"},"SEG_01_JANNI":{"file":"segments/SEG_01_JANNI.mp4","duration":85,"choice":"V2","next":null},"SEG_V2_JANNI":{"file":"segments/SEG_V2_JANNI.mp4","duration":22.37,"choice":"V3","next":null},"SEG_V1_KASPER":{"file":"segments/SEG_V1_KASPER.mp4","duration":37.73,"choice":"V3","next":null},"SEG_V1_LENE":{"file":"segments/SEG_V1_LENE.mp4","duration":40.67,"choice":"V3","next":null},"SEG_V1_THOMAS":{"file":"segments/SEG_V1_THOMAS.mp4","duration":50.53,"choice":"V3","next":null},"SEG_V1_METTE":{"file":"segments/SEG_V1_METTE.mp4","duration":62.73,"choice":"V3","next":null},"SEG_V1_LAEGE":{"file":"segments/SEG_V1_LAEGE.mp4","duration":39.07,"choice":"V3","next":null},"SEG_V1_POLITI":{"file":"segments/SEG_V1_POLITI.mp4","duration":41.3,"choice":"V3","next":null},"SEG_V2_PROCEDURE":{"file":"segments/SEG_V2_PROCEDURE.mp4","duration":58,"choice":"V4","next":null},"SEG_V3A":{"file":"segments/SEG_V3A.mp4","duration":67.47,"choice":null,"next":null},"SEG_V3B":{"file":"segments/SEG_V3B.mp4","duration":80.53,"choice":null,"next":null}},"choices":{"V4":{"question":"Hvad er jeres dom?","A":{"label":"Skyldig","next":"SEG_V3A"},"B":{"label":"Ikke skyldig","next":"SEG_V3B"}},"V1":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Johan?","type":"pick-one","options":[{"label":"Spørg Johan","next":"SEG_V2_JOHAN"},{"label":"Gå videre","next":"SEG_01_JANNI"}]},"V2":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Janni?","type":"pick-one","options":[{"label":"Spørg Janni","next":"SEG_V2_JANNI"},{"label":"Gå videre","next":"V3"}]},"V3":{"question":"Hvilket vidne vil I høre?","type":"pick-until-done","options":[{"label":"Bartenderen Kasper","next":"SEG_V1_KASPER"},{"label":"Kollegaen Lene","next":"SEG_V1_LENE"},{"label":"Johans ven Thomas","next":"SEG_V1_THOMAS"},{"label":"Søsteren Mette","next":"SEG_V1_METTE"},{"label":"Lægen Susanne Holm","next":"SEG_V1_LAEGE"},{"label":"Politiassistent Mikkel Lund","next":"SEG_V1_POLITI"}],"done":{"label":"Vi har hørt nok","next":"SEG_V2_PROCEDURE"}}}};
+const DATA = {"start":"SEG_00_start","segments":{"SEG_00_start":{"file":"segments/SEG_00_start.mp4","duration":126.33,"choice":"V1","next":null,"hold":3.3},"SEG_V2_JOHAN":{"file":"segments/SEG_V2_JOHAN.mp4","duration":22.43,"choice":null,"next":"SEG_01_JANNI"},"SEG_01_JANNI":{"file":"segments/SEG_01_JANNI.mp4","duration":85,"choice":"V2","next":null,"hold":3.3},"SEG_V2_JANNI":{"file":"segments/SEG_V2_JANNI.mp4","duration":22.37,"choice":"V3","next":null,"hold":3.3},"SEG_V1_KASPER":{"file":"segments/SEG_V1_KASPER.mp4","duration":37.73,"choice":"V3","next":null,"hold":3.3},"SEG_V1_LENE":{"file":"segments/SEG_V1_LENE.mp4","duration":40.67,"choice":"V3","next":null,"hold":3.3},"SEG_V1_THOMAS":{"file":"segments/SEG_V1_THOMAS.mp4","duration":50.53,"choice":"V3","next":null,"hold":3.3},"SEG_V1_METTE":{"file":"segments/SEG_V1_METTE.mp4","duration":62.73,"choice":"V3","next":null,"hold":3.3},"SEG_V1_LAEGE":{"file":"segments/SEG_V1_LAEGE.mp4","duration":39.07,"choice":"V3","next":null,"hold":3.3},"SEG_V1_POLITI":{"file":"segments/SEG_V1_POLITI.mp4","duration":41.3,"choice":"V3","next":null,"hold":3.3},"SEG_V2_PROCEDURE":{"file":"segments/SEG_V2_PROCEDURE.mp4","duration":58,"choice":"V4","next":null,"hold":2.5},"SEG_V3A":{"file":"segments/SEG_V3A.mp4","duration":67.47,"choice":null,"next":null},"SEG_V3B":{"file":"segments/SEG_V3B.mp4","duration":80.53,"choice":null,"next":null}},"choices":{"V4":{"question":"Hvad er jeres dom?","A":{"label":"Skyldig","next":"SEG_V3A"},"B":{"label":"Ikke skyldig","next":"SEG_V3B"}},"V1":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Johan?","type":"pick-one","options":[{"label":"Spørg Johan","next":"SEG_V2_JOHAN"},{"label":"Gå videre","next":"SEG_01_JANNI"}]},"V2":{"question":"Domsmændene må stille spørgsmål. Vil I spørge Janni?","type":"pick-one","options":[{"label":"Spørg Janni","next":"SEG_V2_JANNI"},{"label":"Gå videre","next":"V3"}]},"V3":{"question":"Hvilket vidne vil I høre?","type":"pick-until-done","options":[{"label":"Bartenderen Kasper","next":"SEG_V1_KASPER"},{"label":"Kollegaen Lene","next":"SEG_V1_LENE"},{"label":"Johans ven Thomas","next":"SEG_V1_THOMAS"},{"label":"Søsteren Mette","next":"SEG_V1_METTE"},{"label":"Lægen Susanne Holm","next":"SEG_V1_LAEGE"},{"label":"Politiassistent Mikkel Lund","next":"SEG_V1_POLITI"}],"done":{"label":"Vi har hørt nok","next":"SEG_V2_PROCEDURE"}}}};
 const VALG_PAUSE = 120000, SLUT_PAUSE = 60000, PAUSE_MAX = 300000; // tilbage til start, når ingen trykker
 
 const $ = (id) => document.getElementById(id);
 const film = $("film"), lag = { start: $("start"), valg: $("valg"), slut: $("slut") };
-let nu = null, hvile = null;
+let nu = null, hvile = null, valgVist = false;
 const hoert = new Set();
 
 // Valg med knap A og B får samme form som de andre.
@@ -99,7 +99,7 @@ function nulstil() {
 }
 
 function afspil(id) {
-  ventPaaTryk(0); nu = id; vis(null);
+  ventPaaTryk(0); nu = id; valgVist = false; vis(null);
   film.classList.remove("klar");
   film.src = DATA.segments[id].file;
   film.load();
@@ -168,8 +168,14 @@ film.addEventListener("ended", () => {
   const s = DATA.segments[nu];
   if (!s) return;
   if (s.next) afspil(s.next);
-  else if (s.choice) visValg(s.choice);
+  else if (s.choice) naarValg();
   else { $("spring").classList.remove("vis"); vis("slut"); ventPaaTryk(SLUT_PAUSE); }
+});
+// Valget kommer frem, når den dæmpede slutning begynder; klippet spiller færdigt bagved.
+function naarValg() { const s = DATA.segments[nu]; if (s && s.choice && !valgVist) { valgVist = true; visValg(s.choice); } }
+film.addEventListener("timeupdate", () => {
+  const s = DATA.segments[nu];
+  if (s && s.hold && film.duration && film.currentTime >= film.duration - s.hold) naarValg();
 });
 film.addEventListener("error", () => { if (nu) { $("spm").textContent = "Filmen kunne ikke hentes. Tjek forbindelsen, og prøv igen."; $("knapper").textContent = ""; vis("valg"); ventPaaTryk(15000); } });
 
@@ -195,7 +201,7 @@ $("startknap").onclick = () => { if (kanFuld) fuld(true); afspil(DATA.start); };
 $("igen").onclick = nulstil;
 $("tryk").onclick = spil;
 $("pause").onclick = pause;
-$("spring").onclick = () => { if (film.duration) film.currentTime = Math.max(0, film.duration - 0.4); };
+$("spring").onclick = () => { const s = DATA.segments[nu]; if (film.duration) film.currentTime = Math.max(0, film.duration - (s && s.hold ? s.hold : 0.4)); };
 document.addEventListener("keydown", (e) => {
   if (e.key === "f" || e.key === "F") fuld(!erFuld());
   if (e.key === " " && $("pause").classList.contains("vis")) { e.preventDefault(); pause(); }
